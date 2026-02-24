@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ★ تحسين 1 — SEO & Social Sharing -->
+  <meta name="description" content="منصة صنايعي — ابحث عن أفضل نجار وسباك وكهربائي وميكانيكي في منطقتك." />
+  <meta name="theme-color" content="#E8700A" />
+  <meta property="og:title"       content="منصة صنايعي — خدمات محلية" />
+  <meta property="og:description" content="ابحث عن أفضل صنايعي في منطقتك" />
+  <meta property="og:type"        content="website" />
+
+  <title>صنايعي | منصة الخدمات المحلية</title>
+
+  <!-- ★ تحسين 2 — preconnect: يُسرّع تحميل الموارد الخارجية -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+
+  <!-- CSS أولاً قبل أي شيء → منع Flash of Unstyled Content -->
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo" aria-label="منصة صنايعي">
+        <i class="fa-solid fa-screwdriver-wrench" aria-hidden="true"></i>
+        <span>صنايعي</span>
+      </div>
+      <p class="tagline">ابحث عن أفضل صنايعي في منطقتك بكل سهولة</p>
+    </div>
+    <div class="header-wave" aria-hidden="true">
+      <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="var(--bg)"/>
+      </svg>
+    </div>
+  </header>
+
+  <!-- ★ تحسين 3 — <main> landmark: ضروري لقارئات الشاشة -->
+  <main>
+
+    <section class="stats-bar" aria-label="إحصائيات المنصة">
+      <div class="container stats-grid">
+        <div class="stat-item">
+          <i class="fa-solid fa-users" aria-hidden="true"></i>
+          <span id="totalWorkers">0</span>
+          <small>صنايعي مسجل</small>
+        </div>
+        <div class="stat-item">
+          <i class="fa-solid fa-map-location-dot" aria-hidden="true"></i>
+          <span id="totalAreas">0</span>
+          <small>منطقة</small>
+        </div>
+        <div class="stat-item">
+          <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+          <!-- ★ تحسين 4 — القيمة ديناميكية من JS بدل تثبيت "4" في HTML -->
+          <span id="totalSpecialties">0</span>
+          <small>تخصص</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="filters-section" aria-label="خيارات البحث والتصفية">
+      <div class="container">
+        <h2 class="section-title">
+          <i class="fa-solid fa-filter" aria-hidden="true"></i> ابحث وفلتر
+        </h2>
+        <div class="filters-grid" role="search">
+          <div class="filter-group">
+            <label for="filterSpecialty">
+              <i class="fa-solid fa-toolbox" aria-hidden="true"></i> التخصص
+            </label>
+            <select id="filterSpecialty">
+              <option value="all">جميع التخصصات</option>
+              <option value="نجار">🪵 نجار</option>
+              <option value="سباك">🔧 سباك</option>
+              <option value="كهربائي">⚡ كهربائي</option>
+              <option value="ميكانيكي">🔩 ميكانيكي</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filterArea">
+              <i class="fa-solid fa-location-dot" aria-hidden="true"></i> المنطقة
+            </label>
+            <select id="filterArea">
+              <option value="all">جميع المناطق</option>
+            </select>
+          </div>
+          <div class="filter-group filter-reset">
+            <button id="resetFilters" class="btn btn-outline" type="button">
+              <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> إعادة تعيين
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="workers-section" aria-label="قائمة الصنايعية">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fa-solid fa-hard-hat" aria-hidden="true"></i> الصنايعية المتاحون
+          </h2>
+          <!-- ★ تحسين 5 — aria-haspopup: يُعلم المستخدم أن الزر يفتح حوار -->
+          <button class="btn btn-primary" id="openFormBtn" type="button"
+                  aria-haspopup="dialog" aria-controls="formModal">
+            <i class="fa-solid fa-plus" aria-hidden="true"></i> إضافة صنايعي
+          </button>
+        </div>
+
+        <!-- ★ تحسين 6 — role="status": قارئ الشاشة يُعلن عن تغيير النتائج -->
+        <div id="noResults" class="no-results hidden" role="status">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          <p>لا يوجد صنايعية بهذه المواصفات</p>
+        </div>
+
+        <div id="workersGrid" class="workers-grid" aria-live="polite"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ★ تحسين 7 — role="dialog" + aria-modal + aria-labelledby: وصول صحيح للمودال -->
+  <div id="formModal"
+       class="modal-overlay hidden"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="modalTitle">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modalTitle">
+          <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+          إضافة صنايعي جديد
+        </h3>
+        <!-- ★ تحسين 8 — aria-label على الأزرار التي لا تحتوي نصاً -->
+        <button class="modal-close" id="closeFormBtn" type="button" aria-label="إغلاق النافذة">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <form id="addWorkerForm" class="add-form" novalidate>
+
+        <div class="form-group">
+          <label for="workerName">
+            <i class="fa-solid fa-user" aria-hidden="true"></i> الاسم الكامل *
+          </label>
+          <input type="text" id="workerName"
+                 placeholder="مثال: أحمد محمد"
+                 autocomplete="name"
+                 maxlength="60" required />
+          <!-- ★ تحسين 9 — role="alert": يُقرأ فوراً عند ظهور الخطأ -->
+          <span class="field-error" id="nameError" role="alert"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="workerSpecialty">
+            <i class="fa-solid fa-toolbox" aria-hidden="true"></i> التخصص *
+          </label>
+          <select id="workerSpecialty" required>
+            <option value="">اختر التخصص</option>
+            <option value="نجار">🪵 نجار</option>
+            <option value="سباك">🔧 سباك</option>
+            <option value="كهربائي">⚡ كهربائي</option>
+            <option value="ميكانيكي">🔩 ميكانيكي</option>
+          </select>
+          <span class="field-error" id="specialtyError" role="alert"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="workerArea">
+            <i class="fa-solid fa-location-dot" aria-hidden="true"></i> المنطقة *
+          </label>
+          <input type="text" id="workerArea"
+                 placeholder="مثال: المنصورة، الزقازيق..."
+                 maxlength="60" required />
+          <span class="field-error" id="areaError" role="alert"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="workerPhone">
+            <i class="fa-solid fa-phone" aria-hidden="true"></i> رقم الهاتف *
+          </label>
+          <!-- ★ تحسين 10 — inputmode="numeric": لوحة أرقام على الموبايل -->
+          <input type="tel" id="workerPhone"
+                 placeholder="01xxxxxxxxx"
+                 inputmode="numeric"
+                 autocomplete="tel"
+                 maxlength="15" required />
+          <span class="field-error" id="phoneError" role="alert"></span>
+        </div>
+
+        <div class="form-group">
+          <label id="ratingLabel">
+            <i class="fa-solid fa-star" aria-hidden="true"></i> التقييم
+          </label>
+          <!-- ★ تحسين 11 — radiogroup للنجوم: تنقل بلوحة المفاتيح -->
+          <div class="star-picker" id="starPicker"
+               role="radiogroup" aria-labelledby="ratingLabel">
+            <span class="star" data-value="1" role="radio" tabindex="0"  aria-label="نجمة واحدة">★</span>
+            <span class="star" data-value="2" role="radio" tabindex="-1" aria-label="نجمتان">★</span>
+            <span class="star" data-value="3" role="radio" tabindex="-1" aria-label="ثلاث نجوم">★</span>
+            <span class="star" data-value="4" role="radio" tabindex="-1" aria-label="أربع نجوم">★</span>
+            <span class="star" data-value="5" role="radio" tabindex="-1" aria-label="خمس نجوم">★</span>
+          </div>
+          <input type="hidden" id="workerRating" value="5" />
+        </div>
+
+        <div class="form-group">
+          <label for="workerImage">
+            <i class="fa-solid fa-camera" aria-hidden="true"></i> صورة (اختياري)
+          </label>
+          <div class="file-upload-area" id="fileUploadArea">
+            <!-- ★ تحسين 12 — accept محدد: منع رفع ملفات خطيرة -->
+            <input type="file" id="workerImage"
+                   accept="image/jpeg,image/png,image/webp" />
+            <div class="file-upload-ui" aria-hidden="true">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span>انقر لاختيار صورة</span>
+              <small>JPG · PNG · WebP — بحد أقصى 2 ميجابايت</small>
+            </div>
+            <img id="imagePreview" class="img-preview hidden" alt="معاينة الصورة" />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary btn-full" id="submitBtn">
+            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> حفظ الصنايعي
+          </button>
+          <button type="button" class="btn btn-outline btn-full" id="cancelFormBtn">
+            إلغاء
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ★ تحسين 13 — aria-live="assertive": يُقرأ فوراً بعد الظهور -->
+  <div id="toast" class="toast hidden"
+       role="status" aria-live="assertive" aria-atomic="true"></div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>
+        <i class="fa-solid fa-screwdriver-wrench" aria-hidden="true"></i>
+        منصة صنايعي &copy; <span id="currentYear"></span>
+      </p>
+      <small>مبني بـ HTML + CSS + JS — مجاني على GitHub Pages</small>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

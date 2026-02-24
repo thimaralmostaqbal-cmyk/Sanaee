@@ -1,0 +1,933 @@
+/* ============================================================
+   style.css — منصة صنايعي  (النسخة المُحسَّنة)
+   ============================================================
+
+   جدول المحتويات:
+   1. CSS Variables (المتغيرات)
+   2. Reset & Base
+   3. Utilities
+   4. Components: Buttons, Badges
+   5. Header
+   6. Stats Bar
+   7. Filters
+   8. Workers Grid & Cards
+   9. Modal
+   10. Form
+   11. Toast
+   12. Footer
+   13. Responsive
+   14. Accessibility & Reduced Motion
+   ============================================================ */
+
+
+/* ============================================================
+   1. CSS VARIABLES
+   ============================================================ */
+:root {
+  /* ألوان رئيسية */
+  --primary:        #E8700A;
+  --primary-dk:     #C45A00;
+  --primary-lt:     #FFF0E0;
+  --primary-rgb:    232, 112, 10;  /* ★ تحسين: لاستخدام rgba() بدون تكرار الكود */
+
+  /* ألوان واجهة */
+  --bg:             #F8F7F4;
+  --surface:        #FFFFFF;
+  --surface-muted:  #FAFAF8;     /* ★ تحسين: اسم وصفي بدل hard-code في card-actions */
+  --border:         #E5E0D8;
+  --text:           #1C1A18;
+  --text-muted:     #7A746C;
+
+  /* ألوان التخصصات — مركزة في مكان واحد */
+  --color-نجار:     #8B5E3C;
+  --color-سباك:     #1A73E8;
+  --color-كهربائي:  #F5A623;
+  --color-ميكانيكي: #2D9E6B;
+
+  /* ألوان الحالة */
+  --success:        #2D9E6B;
+  --success-dk:     #238058;
+  --danger:         #D94040;
+  --star-on:        #F5A623;
+  --star-off:       #D8D3CB;
+
+  /* badge ثانوي — ★ تحسين: بدل hard-code #EEF2FF في الكود */
+  --badge-area-bg:  #EEF2FF;
+  --badge-area-fg:  #3B4A8A;
+
+  /* أشكال وتأثيرات */
+  --radius:         14px;
+  --radius-sm:      8px;
+  --shadow:         0 4px 20px rgba(0, 0, 0, .08);
+  --shadow-hover:   0 8px 32px rgba(var(--primary-rgb), .18);
+  --transition:     .22s cubic-bezier(.4, 0, .2, 1);
+  --font:           'Cairo', sans-serif;
+}
+
+
+/* ============================================================
+   2. RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* ★ تحسين: text-size-adjust يمنع iOS من تكبير النص بشكل عشوائي */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  direction: rtl;
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.65;
+  /* ★ تحسين: تسليم رسم الخط للـ GPU مبكراً */
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: var(--font);
+  /* ★ تحسين: لا نحذف outline هنا — نُعيد تعريفه فقط لـ focus-visible */
+  background: none;
+}
+
+select,
+input {
+  font-family: var(--font);
+}
+
+/* ============================================================
+   3. UTILITIES
+   ============================================================ */
+.hidden {
+  display: none !important;
+}
+
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.section-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title i { color: var(--primary); }
+
+
+/* ============================================================
+   4. COMPONENTS: BUTTONS & BADGES
+   ============================================================ */
+
+/* ── أزرار عامة ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 700;
+  transition: var(--transition);
+  white-space: nowrap;
+  /* ★ تحسين: will-change يُعلم المتصفح مسبقاً بالانتقال → أداء أفضل */
+  will-change: transform;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(var(--primary-rgb), .3);
+}
+.btn-primary:hover {
+  background: var(--primary-dk);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(var(--primary-rgb), .4);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+.btn-outline:hover {
+  background: var(--primary-lt);
+}
+
+.btn-full {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ── أيقونات Focus للوح المفاتيح ── */
+/* ★ تحسين الكبير: بدل outline:none نحدد شكل focus واضح وجميل */
+:focus { outline: none; }
+:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── شارات (Badges) ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.badge-specialty {
+  background: var(--primary-lt);
+  color: var(--primary-dk);
+}
+.badge-area {
+  background: var(--badge-area-bg);
+  color: var(--badge-area-fg);
+}
+
+/* ── نجوم التقييم في الكروت ── */
+.stars {
+  display: flex;
+  gap: 2px;
+  font-size: 14px;
+}
+.stars .star-filled { color: var(--star-on); }
+.stars .star-empty  { color: var(--star-off); }
+
+
+/* ============================================================
+   5. HEADER
+   ============================================================ */
+.site-header {
+  position: relative;
+  /* ★ تحسين: استخدام المتغيرات بدل hard-code للألوان */
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dk) 60%, #1A73E8 100%);
+  padding: 36px 0 60px;
+  text-align: center;
+  color: #fff;
+  overflow: hidden;
+}
+
+/* نمط النقاط الزخرفي */
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,.08) 1px, transparent 1px);
+  background-size: 28px 28px;
+  /* ★ تحسين: pointer-events:none يمنع تداخله مع النقرات */
+  pointer-events: none;
+}
+
+.header-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+.logo i {
+  font-size: 1.7rem;
+  background: rgba(255,255,255,.2);
+  padding: 12px;
+  border-radius: 50%;
+}
+
+.tagline {
+  margin-top: 10px;
+  font-size: 1rem;
+  opacity: .88;
+  font-weight: 400;
+}
+
+.header-wave {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  line-height: 0;
+}
+.header-wave svg {
+  display: block;
+  width: 100%;
+}
+
+
+/* ============================================================
+   6. STATS BAR
+   ============================================================ */
+.stats-bar {
+  padding: 24px 0;
+}
+
+.stats-grid {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 28px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  flex: 1 1 120px;
+  max-width: 180px;
+  transition: var(--transition);
+  will-change: transform;
+}
+.stat-item:hover {
+  border-color: var(--primary);
+  transform: translateY(-3px);
+}
+.stat-item i {
+  color: var(--primary);
+  font-size: 1.4rem;
+  margin-bottom: 6px;
+  display: block;
+}
+.stat-item span {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--text);
+  display: block;
+  line-height: 1;
+}
+.stat-item small {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+
+/* ============================================================
+   7. FILTERS
+   ============================================================ */
+.filters-section {
+  padding: 24px 0 12px;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: end;
+}
+
+.filter-reset {
+  display: flex;
+  align-items: flex-end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.filter-group label i { color: var(--primary); }
+
+/* ★ تحسين DRY: class واحد .field-input يُغطي الفلاتر والنموذج معاً */
+.field-input {
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  width: 100%;
+}
+.field-input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), .12);
+}
+/* تطبيقه على عناصر الفلتر والنموذج */
+.filter-group select,
+.filter-group input,
+.form-group input,
+.form-group select {
+  composes: field-input; /* fallback للمتصفحات التي لا تدعم composes */
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  width: 100%;
+}
+.filter-group select:focus,
+.filter-group input:focus,
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), .12);
+}
+
+/* حالة الخطأ: حد أحمر على حقل غير صحيح */
+.form-group.has-error input,
+.form-group.has-error select {
+  border-color: var(--danger);
+}
+.form-group.has-error input:focus,
+.form-group.has-error select:focus {
+  box-shadow: 0 0 0 3px rgba(217, 64, 64, .15);
+}
+
+
+/* ============================================================
+   8. WORKERS SECTION & CARDS
+   ============================================================ */
+.workers-section {
+  padding: 12px 0 48px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/* شبكة الكروت */
+.workers-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* ── كرت الصنايعي ── */
+.worker-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  /* ★ تحسين الأداء: contain يحدّ عمليات إعادة الرسم على هذا الكرت فقط */
+  contain: layout style;
+  will-change: transform;
+}
+.worker-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--primary);
+}
+
+/* شريط لوني علوي — ★ تحسين: يستخدم CSS variables بدل تكرار اللون */
+.worker-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 4px;
+  border-radius: var(--radius) var(--radius) 0 0;
+  /* اللون الافتراضي */
+  background: var(--card-accent, var(--primary));
+}
+
+/* ★ تحسين: data-specialty بدل class يحتوي Arabic text → أكثر استقراراً */
+.worker-card[data-specialty="نجار"]    { --card-accent: var(--color-نجار); }
+.worker-card[data-specialty="سباك"]    { --card-accent: var(--color-سباك); }
+.worker-card[data-specialty="كهربائي"] { --card-accent: var(--color-كهربائي); }
+.worker-card[data-specialty="ميكانيكي"]{ --card-accent: var(--color-ميكانيكي); }
+
+.card-inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 16px 14px;
+}
+
+/* الصورة / الأيقونة */
+.worker-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 3px solid var(--primary-lt);
+  flex-shrink: 0;
+  background: var(--primary-lt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  overflow: hidden;
+}
+.worker-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* معلومات الصنايعي */
+.worker-info {
+  flex: 1;
+  min-width: 0; /* يمنع overflow على النصوص الطويلة */
+}
+
+.worker-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.worker-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+/* أزرار أسفل الكرت */
+.card-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-muted);
+}
+
+.btn-call {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--success);
+  color: #fff;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font);
+  transition: background var(--transition), transform var(--transition);
+  will-change: transform;
+}
+.btn-call:hover {
+  background: var(--success-dk);
+  transform: scale(1.02);
+}
+
+.btn-delete {
+  background: transparent;
+  color: var(--danger);
+  border: 1.5px solid var(--danger);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  transition: background var(--transition);
+  font-family: var(--font);
+}
+.btn-delete:hover {
+  background: #FFEEEE;
+}
+
+/* رسالة "لا يوجد نتائج" */
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+.no-results i {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  display: block;
+  color: var(--border);
+}
+.no-results p {
+  font-size: 1rem;
+}
+
+/* انيميشن ظهور الكرت */
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.worker-card {
+  animation: cardFadeIn .25s ease both;
+}
+
+
+/* ============================================================
+   9. MODAL
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 26, 24, .55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end; /* يفتح من الأسفل على الموبايل */
+  justify-content: center;
+  padding: 0;
+  /* ★ تحسين: overscroll-behavior يمنع تمرير الخلفية عند التمرير في المودال */
+  overscroll-behavior: contain;
+}
+
+.modal-box {
+  background: var(--surface);
+  border-radius: var(--radius) var(--radius) 0 0;
+  width: 100%;
+  max-width: 540px;
+  max-height: 94vh;
+  overflow-y: auto;
+  /* ★ تحسين: -webkit-overflow-scrolling للتمرير السلس على iOS */
+  -webkit-overflow-scrolling: touch;
+  animation: slideUp .3s cubic-bezier(.4, 0, .2, 1);
+  padding-bottom: 32px;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ★ تحسين: انيميشن الإغلاق */
+.modal-overlay.closing .modal-box {
+  animation: slideDown .25s cubic-bezier(.4, 0, .2, 1) forwards;
+}
+@keyframes slideDown {
+  from { transform: translateY(0);    opacity: 1; }
+  to   { transform: translateY(100%); opacity: 0; }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  /* sticky header داخل المودال */
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 1;
+}
+.modal-header h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.modal-header h3 i { color: var(--primary); }
+
+.modal-close {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: var(--text-muted);
+  transition: background var(--transition), color var(--transition);
+}
+.modal-close:hover {
+  background: #FFE8E8;
+  color: var(--danger);
+}
+
+
+/* ============================================================
+   10. FORM
+   ============================================================ */
+.add-form {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.form-group label i { color: var(--primary); }
+
+.form-group input,
+.form-group select {
+  background: var(--bg); /* خلفية أغمق قليلاً لتمييز الحقل */
+}
+.form-group input:focus,
+.form-group select:focus {
+  background: var(--surface);
+}
+
+.field-error {
+  font-size: 12px;
+  color: var(--danger);
+  font-weight: 600;
+  min-height: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── اختيار التقييم بالنجوم ── */
+.star-picker {
+  display: flex;
+  gap: 6px;
+  /* ★ تحسين RTL: flex-direction: row يعمل بشكل صحيح مع RTL تلقائياً،
+     استخدام row-reverse كان يعكس منطق الـ ~ selector في CSS */
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.star-picker .star {
+  font-size: 2rem;
+  color: var(--star-off);
+  cursor: pointer;
+  transition: color .15s, transform .15s;
+  user-select: none;
+  line-height: 1;
+  padding: 2px;
+}
+.star-picker .star.active {
+  color: var(--star-on);
+  transform: scale(1.15);
+}
+
+/* ── رفع الصورة ── */
+.file-upload-area {
+  position: relative;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  text-align: center;
+  transition: border-color var(--transition), background var(--transition);
+  cursor: pointer;
+  background: var(--bg);
+}
+.file-upload-area:hover,
+.file-upload-area:focus-within {
+  border-color: var(--primary);
+  background: var(--primary-lt);
+}
+.file-upload-area input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  border: none;
+  padding: 0;
+}
+.file-upload-ui i {
+  font-size: 1.8rem;
+  color: var(--primary);
+  display: block;
+  margin-bottom: 6px;
+}
+.file-upload-ui span {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 600;
+  display: block;
+}
+.file-upload-ui small {
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: .7;
+  margin-top: 3px;
+  display: block;
+}
+
+.img-preview {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 8px auto 0;
+  border: 3px solid var(--primary);
+}
+
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+
+/* ============================================================
+   11. TOAST
+   ============================================================ */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 40px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 2000;
+  box-shadow: 0 4px 24px rgba(0,0,0,.25);
+  /* ★ تحسين: max-width يمنع امتداده على الشاشات الكبيرة */
+  max-width: calc(100vw - 32px);
+  text-align: center;
+}
+
+/* ★ تحسين: animation على class منفصل بدل الـ .toast مباشرة
+   لأن إزالة hidden ثم إضافتها لا تُعيد تشغيل animation تلقائياً */
+.toast.show {
+  animation: toastIn .3s ease forwards;
+}
+.toast.hide {
+  animation: toastOut .25s ease forwards;
+}
+
+.toast.success { background: var(--success); }
+.toast.error   { background: var(--danger); }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+@keyframes toastOut {
+  from { opacity: 1; transform: translateX(-50%) translateY(0); }
+  to   { opacity: 0; transform: translateX(-50%) translateY(8px); }
+}
+
+
+/* ============================================================
+   12. FOOTER
+   ============================================================ */
+.site-footer {
+  background: var(--text);
+  color: rgba(255,255,255,.7);
+  text-align: center;
+  padding: 20px;
+  font-size: 13px;
+}
+.site-footer i { color: var(--primary); }
+.site-footer p { margin-bottom: 4px; }
+
+
+/* ============================================================
+   13. RESPONSIVE
+   ============================================================ */
+@media (min-width: 540px) {
+  /* المودال يظهر في المنتصف على الأجهزة الكبيرة */
+  .modal-overlay  { align-items: center; padding: 20px; }
+  .modal-box      { border-radius: var(--radius); max-height: 90vh; }
+
+  .filters-grid   { grid-template-columns: 1fr 1fr 1fr; }
+  .workers-grid   { grid-template-columns: 1fr 1fr; }
+}
+
+@media (min-width: 900px) {
+  .site-header    { padding: 56px 0 80px; }
+  .logo           { font-size: 2.5rem; }
+  .workers-grid   { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+/* شاشات كبيرة جداً */
+@media (min-width: 1280px) {
+  .workers-grid   { grid-template-columns: repeat(4, 1fr); }
+}
+
+
+/* ============================================================
+   14. ACCESSIBILITY & REDUCED MOTION
+   ============================================================ */
+
+/* ★ تحسين مهم: احترام تفضيل المستخدم بإلغاء الحركة (prefers-reduced-motion)
+   يُلغي جميع الانيميشنات للمستخدمين الذين يعانون من حساسية الحركة */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ★ تحسين: وضع التباين العالي (High Contrast) */
+@media (forced-colors: active) {
+  .worker-card::before,
+  .btn-primary,
+  .btn-call {
+    forced-color-adjust: none;
+  }
+}
